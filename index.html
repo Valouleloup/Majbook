@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8">
+	<title>Majbook</title>
+	<style>
+		#ul-list{
+			display:none;
+		}
+		table {
+		  font-family: arial, sans-serif;
+		  border-collapse: collapse;
+		  width: 100%;
+		  margin: 10px 0;
+		}
+		
+		thead tr td {
+			background-color: #ffa27a;
+		}
+		
+		td, th {
+		  border: 1px solid #dddddd;
+		  text-align: left;
+		  padding: 4px 4px;
+		}
+
+		tr:nth-child(even) {
+		  background-color: #f3f3f3;
+		}
+		tr:hover{
+			background-color:#ccc;
+		}
+		.hightlight {
+			background-color:red;
+		}
+	</style>
+</head>
+<body>
+
+	<label for="search-input">Recherche par mots-clés</label>
+	<input id="search-input"></input>
+	
+	<label for="search-item">Recherche par item</label>
+	<input id="search-item"></input>
+	
+	<ul id="ul-list">
+	</ul>
+	
+	<table id="ul-show">
+	</table>
+
+	<script src="https://cdn.jsdelivr.net/npm/latinize@0.4.1/latinize.min.js"></script>
+	<script>
+		
+		var ulList = document.getElementById('ul-list');
+		
+		var listChapters = [
+			{"item": 1,"body": "La relation médecin malade","page": 21,"books":"Pédiatrie,Immuno Med i,Psy"},
+			{"item": 2,"body": "Les valeurs professionnelles du médecin et des autres professions de santé","page": 23,"books":"Immuno Med i"},
+			{"item": 3,"body": "Le raisonnement et la décision en médecine","page": 25,"books":"Immuno Med i"},
+			{"item": 4,"body": "La sécurité du patient","page": 28,"books":"Maladie inf"},
+			{"item": 5,"body": "La gestion des erreurs et des plaintes ; l'aléa thérapeutique","page": 33,"books":""},
+			{"item": 6,"body": "L'organisation de l'exercice clinique et les méthodes qui permettent de sécuriser le parcours du patient","page": 36,"books":""},
+			{"item": 7,"body": "Les droits individuels et collectifs du patient","page": 38,"books":""},
+			{"item": 8,"body": "Éthique médicale","page": 41,"books":"Gynéco Obs"},
+			{"item": 9,"body": "Certificats médicaux. Décès et législation. Prélèvements d'organes et législation","page": 42,"books":"Ophtalmo,Pédiatrie"},
+			{"item": 10,"body": "Violences sexuelles","page": 45,"books":"Gynéco Obs,Psy"},
+			{"item": 11,"body": "Soins psychiatriques sans consentement","page": 48,"books":"Psy"},
+			{"item": 12,"body": "Responsabilités médicale pénale civile administrative et disciplinaire","page": 54,"books":""},
+			{"item": 13,"body": "Principes d'une démarche qualité et évaluation des pratiques professionnelles","page": 57,"books":""},
+			{"item": 14,"body": "Formation tout au long de la vie","page": 60,"books":""},
+			{"item": 15,"body": "Organisation du système de soins","page": 62,"books":""},
+			{"item": 16,"body": "La sécurité sociale. L'assurance maladie. Les assurances complémentaires","page": 68,"books":""},
+			{"item": 17,"body": "Le système conventionnel","page": 76,"books":""},
+			{"item": 18,"body": "La méthodologie de la recherche expérimentale et clinique","page": "79/95/99","books":""},
+			{"item": 19,"body": "Mesure de l'état de santé de la population","page": 101,"books":"Pédiatrie"},
+			{"item": 20,"body": "Interprétation d'une enquête épidémiologique","page": "79/95/99","books":""},
+			{"item": 21,"body": "Examen prénuptial","page": 107,"books":"Gynéco Obs"},
+			{"item": 22,"body": "Grossesse normale","page": 108,"books":"Néphrologie,Gynéco Obs"},
+			{"item": 23,"body": "Principales complications de la grossesse","page": 113,"books":"Néphrologie,Gynéco Obs"},
+			{"item": 24,"body": "Grossesse extra-utérine","page": 121,"books":"Gynéco Obs"},
+			{"item": 25,"body": "Douleur abdominale aiguë chez une femme enceinte","page": 123,"books":"Gynéco Obs"},
+			{"item": 26,"body": "Prévention des risques foetaux : infection médicaments toxiques irradiation","page": 125,"books":"Pédiatrie,Gynéco Obs,Maladie inf"},
+			{"item": 27,"body": "Connaître les particularités de l'infection urinaire au cours de la grossesse","page": 138,"books":"Gynéco Obs,Maladie inf"},
+			{"item": 28,"body": "Connaître les principaux risques professionnels pour la maternité liés au travail de la mère.","page": 140,"books":"Gynéco Obs"},
+			{"item": 29,"body": "Prématurité et retard de croissance intra-utérin","page": 141,"books":"Pédiatrie,Gynéco Obs"},
+			{"item": 30,"body": "Accouchement délivrance et suites de couches normales","page": 145,"books":"Gynéco Obs"},
+			{"item": 31,"body": "Évaluation et soins du nouveau-né à terme","page": 153,"books":"Pédiatrie,Gynéco Obs"},
+			{"item": 32,"body": "Allaitement maternel","page": 160,"books":"Endoc Nutrition,Pédiatrie,Gynéco Obs"},
+			{"item": 33,"body": "Suites de couches pathologiques : pathologie maternelle dans les 40 jours","page": 163,"books":"Gynéco Obs"},
+			{"item": 34,"body": "Anomalies du cycle menstruel. Métrorragies","page": 166,"books":"Gynéco Obs"},
+			{"item": 35,"body": "Contraception","page": 167,"books":"Urologie,Endoc Nutrition,Gynéco Obs"},
+			{"item": 36,"body": "Interruption volontaire de grossesse","page": 174,"books":"Gynéco Obs"},
+			{"item": 37,"body": "Stérilité du couple : conduite de la première consultation","page": 177,"books":"Urologie,Endoc Nutrition,Gynéco Obs"},
+			{"item": 38,"body": "Assistance médicale à la procréation","page": 181,"books":"Urologie,Gynéco Obs"},
+			{"item": 39,"body": "Algies pelviennes chez la femme","page": 184,"books":"Gynéco Obs"},
+			{"item": 40,"body": "Aménorrhée","page": 187,"books":"Endoc Nutrition,Gynéco Obs"},
+			{"item": 41,"body": "Hémorragie génitale chez la femme","page": 193,"books":"Gynéco Obs"},
+			{"item": 42,"body": "Tuméfaction pelvienne chez la femme","page": 196,"books":"Urologie,Gynéco Obs"},
+			{"item": 43,"body": "Problèmes posés par les maladies génétiques","page": 201,"books":"Pédiatrie,Gynéco Obs"},
+			{"item": 44,"body": "Suivi d'un nourrisson d'un enfant et d'un adolescent normal","page": 206,"books":"ORL,Ophtalmo,Pédiatrie"},
+			{"item": 45,"body": "Alimentation et besoins nutritionnels du nourrisson et de l'enfant","page": 218,"books":"Endoc Nutrition,Pédiatrie"},
+			{"item": 46,"body": "Développement buccodentaire et anomalies","page": 220,"books":"Maxillo,Pédiatrie"},
+			{"item": 47,"body": "Puberté normale et pathologique","page": 225,"books":"Endoc Nutrition,Pédiatrie,Gynéco Obs"},
+			{"item": 48,"body": "Pathologie génito-scrotale chez le garçon et chez l'homme","page": 229,"books":"Urologie,Endoc Nutrition,Pédiatrie"},
+			{"item": 49,"body": "Troubles de la miction chez l'enfant","page": 233,"books":"Pédiatrie"},
+			{"item": 50,"body": "Strabisme de l'enfant","page": 235,"books":"Ophtalmo,Pédiatrie"},
+			{"item": 51,"body": "Retard de croissance staturo-pondérale","page": 237,"books":"Endoc Nutrition,Pédiatrie,Gynéco Obs"},
+			{"item": 52,"body": "Boiterie chez l'enfant","page": 242,"books":"Rhumato,Ortho,Pédiatrie"},
+			{"item": 53,"body": "Développement psychomoteur du nourrisson et de l'enfant","page": 249,"books":"Pédiatrie,Psy"},
+			{"item": 54,"body": "L'enfant handicapé","page": 253,"books":"Pédiatrie,Gynéco Obs"},
+			{"item": 55,"body": "Maltraitance et enfants en danger","page": 255,"books":"Pédiatrie"},
+			{"item": 56,"body": "Sexualité normale et ses troubles","page": 257,"books":"Urologie,Gynéco Obs,Psy"},
+			{"item": 57,"body": "Sujets en situation de précarité","page": 261,"books":"Immuno Med i,Psy"},
+			{"item": 58,"body": "Connaître les facteurs de risque prévention dépistage des troubles psychiques de l'enfant à la personne agée","page": 263,"books":"Psy"},
+			{"item": 59,"body": "Connaître les bases des classifications des troubles mentaux de l'enfant à la personne âgée","page": 264,"books":"Psy"},
+			{"item": 60,"body": "Décrire l'organisation de l'offre de soins en psychiatrie de l'enfant à la personne âgée","page": 266,"books":"Psy"},
+			{"item": 61,"body": "Trouble schizophrénique de l'adolescent et de l'adulte","page": 268,"books":"Psy"},
+			{"item": 62,"body": "Trouble bipolaire de l'adolescent et de l'adulte","page": 274,"books":"Psy"},
+			{"item": 63,"body": "Trouble délirant persistant","page": 279,"books":"Psy"},
+			{"item": 64,"body": "Diagnostiquer : un trouble dépressif un trouble anxieux généralisé un trouble panique un trouble phobique un trouble obsessionnel compulsif un état de stress post-traumatique un trouble de l'adaptation (de l'enfant à la personne âgée) un trouble de la personnalité.","page": 281,"books":"Psy"},
+			{"item": 65,"body": "Troubles envahissants du développement","page": 298,"books":"Psy"},
+			{"item": 66,"body": "Troubles du comportement de l'adolescent","page": 302,"books":"Psy"},
+			{"item": 67,"body": "Troubles psychiques de la grossesse et du post-partum","page": 305,"books":"Gynéco Obs,Psy"},
+			{"item": 68,"body": "Troubles psychiques du sujet âgé","page": 309,"books":"Gériatrie,Psy"},
+			{"item": 69,"body": "Troubles des conduites alimentaires chez l'adolescent et l'adulte","page": 313,"books":"Endoc Nutrition,Pédiatrie,Psy"},
+			{"item": 70,"body": "Troubles somatoformes à tous les âges","page": 320,"books":"Immuno Med i,Psy"},
+			{"item": 71,"body": "Différents types de techniques psychothérapeutiques","page": 323,"books":"Psy"},
+			{"item": 72,"body": "Prescription et surveillance des psychotropes","page": 326,"books":"Psy"},
+			{"item": 73,"body": "Addiction au tabac","page": 341,"books":"Pneumo,Psy"},
+			{"item": 74,"body": "Addiction à l'alcool","page": 344,"books":"HGE,Neuro,Psy"},
+			{"item": 75,"body": "Addiction aux médicaments psychotropes","page": 351,"books":"Psy"},
+			{"item": 76,"body": "Addiction au cannabis à la cocaïne aux amphétamines aux opiacés aux drogues de synthèse","page": 353,"books":"Psy"},
+			{"item": 77,"body": "Addictions comportementales","page": 362,"books":"Psy"},
+			{"item": 78,"body": "Dopage","page": 365,"books":"Endoc Nutrition,Psy"},
+			{"item": 79,"body": "Altération de la fonction visuelle","page": 0,"books":"Ophtalmo,Gériatrie"},
+			{"item": 80,"body": "Anomalie de la vision d'apparition brutale","page": 0,"books":"Ophtalmo,Neuro"},
+			{"item": 81,"body": "Oeil rouge et/ou douloureux","page": 0,"books":"Ophtalmo"},
+			{"item": 82,"body": "Glaucome chronique","page": 0,"books":"Ophtalmo"},
+			{"item": 83,"body": "Troubles de la réfraction","page": 0,"books":"Ophtalmo"},
+			{"item": 84,"body": "Pathologie des paupières","page": 0,"books":"Ophtalmo"},
+			{"item": 85,"body": "Epistaxis","page": 0,"books":"ORL"},
+			{"item": 86,"body": "Trouble aigu de la parole. Dysphonie","page": 0,"books":"ORL,Neuro"},
+			{"item": 87,"body": "Altération de la fonction auditive","page": 0,"books":"ORL,Pédiatrie"},
+			{"item": 88,"body": "Pathologie des glandes salivaires","page": 0,"books":"ORL,Maxillo,Immuno Med i"},
+			{"item": 89,"body": "Déficit neurologique récent","page": 0,"books":"Neuro"},
+			{"item": 90,"body": "Déficit moteur et/ou sensitif des membres","page": 0,"books":"Neuro"},
+			{"item": 91,"body": "Compression médullaire non traumatique et syndrome de la queue de cheval","page": 0,"books":"Rhumato,Neuro"},
+			{"item": 92,"body": "Rachialgie","page": 0,"books":"Rhumato"},
+			{"item": 93,"body": "Radiculalgie et syndrome canalaire","page": 0,"books":"Rhumato,Ortho,Neuro"},
+			{"item": 94,"body": "Neuropathies périphériques","page": 0,"books":"Neuro"},
+			{"item": 95,"body": "Polyradiculonévrite aiguë inflammatoire (syndrome de Guillain-Barré)","page": 0,"books":"Neuro,Immuno Med i"},
+			{"item": 96,"body": "Myasthénie","page": 0,"books":"Neuro,Immuno Med i"},
+			{"item": 97,"body": "Migraine névralgie du trijumeau et algies de la face","page": 0,"books":"ORL,Maxillo,Neuro"},
+			{"item": 98,"body": "Céphalée aiguë et chronique chez l'adulte et l'enfant","page": 0,"books":"Neuro,Pédiatrie"},
+			{"item": 99,"body": "Paralysie faciale","page": 0,"books":"ORL,Neuro"},
+			{"item": 100,"body": "Diplopie","page": 0,"books":"Ophtalmo,Neuro"},
+			{"item": 101,"body": "Vertige","page": 0,"books":"ORL,Neuro"},
+			{"item": 102,"body": "Sclérose en plaques","page": 0,"books":"Ophtalmo,Neuro,Immuno Med i"},
+			{"item": 103,"body": "Épilepsie de l'enfant et de l'adulte","page": 0,"books":"Neuro,Pédiatrie"},
+			{"item": 104,"body": "Maladie de Parkinson","page": 0,"books":"Neuro"},
+			{"item": 105,"body": "Mouvements anormaux","page": 0,"books":"Neuro"},
+			{"item": 106,"body": "Confusion démences","page": 0,"books":"Gériatrie,Neuro,Psy"},
+			{"item": 107,"body": "Troubles de la marche et de l'équilibre","page": 0,"books":"Rhumato,Neuro"},
+			{"item": 108,"body": "Troubles du sommeil de l'enfant et de l'adulte","page": 0,"books":"ORL,Pneumo,Neuro"},
+			{"item": 109,"body": "Dermatoses faciales : acné rosacée dermatite séborrhéique","page": 0,"books":"Dermato"},
+			{"item": 110,"body": "Dermatose bulleuse touchant la peau et/ou les muqueuses externes","page": 0,"books":"Dermato"},
+			{"item": 111,"body": "Hémangiomes et malformations vasculaires cutanées","page": 0,"books":"Dermato,Maxillo"},
+			{"item": 112,"body": "Exanthème et érythrodermie de l'adulte et de l'enfant","page": 0,"books":"Dermato"},
+			{"item": 113,"body": "Prurit","page": 0,"books":"Dermato"},
+			{"item": 114,"body": "Psoriasis","page": 0,"books":"Dermato,Rhumato"},
+			{"item": 115,"body": "La personne handicapée : bases de l'évaluation fonctionnelle et thérapeutique","page": 0,"books":"ORL,Neuro"},
+			{"item": 116,"body": "Complications de l'immobilité et du décubitus","page": 0,"books":"Ortho,Neuro"},
+			{"item": 117,"body": "Le handicap psychique","page": 0,"books":"Psy"},
+			{"item": 118,"body": "Principales techniques de rééducation et de réadaptation","page": 0,"books":"ORL,Rhumato,Ortho"},
+			{"item": 119,"body": "Vieillissement normal","page": 0,"books":"Gériatrie,Néphrologie"},
+			{"item": 120,"body": "Ménopause et andropause","page": 0,"books":"Gériatrie,Urologie,Endoc Nutrition"},
+			{"item": 121,"body": "Troubles de la miction et incontinence urinaire de l'adulte et du sujet âgé","page": 0,"books":"Urologie,Gynéco Obs"},
+			{"item": 122,"body": "Trouble de l'érection","page": 0,"books":"Urologie,Endoc Nutrition"},
+			{"item": 123,"body": "Hypertrophie bénigne de la prostate","page": 0,"books":"Urologie"},
+			{"item": 124,"body": "Ostéopathies fragilisantes","page": 0,"books":"Rhumato,Gériatrie,Endoc Nutrition"},
+			{"item": 125,"body": "Arthrose","page": 0,"books":"Rhumato,Gériatrie"},
+			{"item": 126,"body": "La personne âgée malade : particularités sémiologiques psychologiques et thérapeutiques","page": 0,"books":"Gériatrie,Néphrologie"},
+			{"item": 127,"body": "Déficit neurosensoriel chez le sujet âgé","page": 0,"books":"ORL,Ophtalmo,Gériatrie"},
+			{"item": 128,"body": "Troubles de la marche et de l'équilibre","page": 0,"books":"Rhumato,Gériatrie,Neuro"},
+			{"item": 129,"body": "Troubles cognitifs du sujet âgé","page": 0,"books":"Gériatrie,Neuro,Psy"},
+			{"item": 130,"body": "Autonomie et dépendance chez le sujet âgé","page": 0,"books":"Gériatrie"},
+			{"item": 131,"body": "Bases neurophysiologiques mécanismes physiopathologiques d'une douleur aiguë et d'une douleur chronique","page": 0,"books":"Soins pal,Rhumato,Neuro"},
+			{"item": 132,"body": "Thérapeutiques antalgiques médicamenteuses et non médicamenteuses","page": 0,"books":"Soins pal,Rhumato,Neuro"},
+			{"item": 133,"body": "Anesthésie locale locorégionale et générale","page": 0,"books":"Soins pal,Maxillo,Gynéco Obs"},
+			{"item": 134,"body": "Douleur chez l'enfant: évaluation et traitements antalgiques","page": 0,"books":"Soins pal,Pédiatrie"},
+			{"item": 135,"body": "Douleur en santé mentale","page": 0,"books":"Psy"},
+			{"item": 136,"body": "Soins palliatifs pluridisciplinaires chez un malade en phase palliative ou terminale d'une maladie grave chronique ou létale. (1) Principaux repères cliniques. Modalités d'organisation des équipes en établissement de santé et en ambulatoire","page": 0,"books":"Soins pal"},
+			{"item": 137,"body": "Soins palliatifs pluridisciplinaires chez un malade en phase palliative ou terminale d'une maladie grave chronique ou létale. (2) Accompagnement de la personne malade et de son entourage","page": 0,"books":"Soins pal"},
+			{"item": 138,"body": "Soins palliatifs pluridisciplinaires chez un malade en phase palliative ou terminale d'une maladie grave chronique ou létale. (3) La sédation pour détresse en phase terminale et dans des situations spécifiques et complexes en fin de vie. Réponse à la demande d'euthanasie ou de suicide assisté","page": 0,"books":"Soins pal"},
+			{"item": 139,"body": "Connaître les aspects spécifiques des soins palliatifs en pédiatrie","page": 0,"books":"Soins pal,Pédiatrie"},
+			{"item": 140,"body": "Connaître les aspects spécifiques des soins palliatifs en réanimation","page": 0,"books":"Soins pal"},
+			{"item": 141,"body": "Deuil normal et pathologique","page": 0,"books":"Soins pal,Psy"},
+			{"item": 142,"body": "Surveillance des maladies infectieuses transmissibles","page": 0,"books":"Maladie inf"},
+			{"item": 143,"body": "Vaccinations","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 144,"body": "Fièvre aiguë chez l'enfant et l'adulte","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 145,"body": "Infections naso-sinusiennes de l'adulte et de l'enfant","page": 0,"books":"ORL,Pédiatrie,Maladie inf"},
+			{"item": 146,"body": "Angines de l'adulte et de l'enfant et rhinopharyngites de l'enfant","page": 0,"books":"ORL,Pédiatrie,Maladie inf"},
+			{"item": 147,"body": "Otites infectieuses de l'adulte et de l'enfant","page": 0,"books":"ORL,Pédiatrie,Maladie inf"},
+			{"item": 148,"body": "Méningites méningoencéphalites chez l'adulte et l'enfant","page": 0,"books":"Neuro,Pédiatrie,Maladie inf"},
+			{"item": 149,"body": "Endocardite infectieuse","page": 0,"books":"Cardio,Immuno Med i,Maladie inf"},
+			{"item": 150,"body": "Surveillance des porteurs de valve et prothèses vasculaires","page": 0,"books":"Cardio,Maladie inf"},
+			{"item": 151,"body": "Infections broncho pulmonaires communautaires de l'adulte et de l'enfant","page": 0,"books":"Pneumo,Pédiatrie,Maladie inf"},
+			{"item": 152,"body": "Infections cutanéo-muqueuses et des phanères bactériennes et mycosiques de l'adulte et de l'enfant","page": 0,"books":"Dermato,Maxillo,Pédiatrie"},
+			{"item": 153,"body": "Infections ostéo articulaires (IOA) de l'enfant et de l'adulte","page": 0,"books":"Rhumato,Ortho,Pédiatrie"},
+			{"item": 154,"body": "Septicémie/Bactériémie/Fongémie de l'adulte et de l'enfant","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 155,"body": "Tuberculose de l'adulte et de l'enfant","page": 0,"books":"Pneumo,Pédiatrie,Maladie inf"},
+			{"item": 156,"body": "Tétanos","page": 0,"books":"Maladie inf"},
+			{"item": 157,"body": "Infections urinaires de l'enfant et de l'adulte","page": 0,"books":"Néphrologie,Urologie,Pédiatrie"},
+			{"item": 158,"body": "Infections sexuellement transmissibles","page": 0,"books":"Dermato,Urologie,Gynéco Obs"},
+			{"item": 159,"body": "Coqueluche","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 160,"body": "Exanthèmes fébriles de l'enfant","page": 0,"books":"Dermato,Pédiatrie,Gynéco Obs"},
+			{"item": 161,"body": "Oreillons","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 162,"body": "Grippe","page": 0,"books":"Maladie inf"},
+			{"item": 163,"body": "Hépatites virales","page": 0,"books":"HGE,Maladie inf"},
+			{"item": 164,"body": "Infections à herpès virus du sujet immunocompétent","page": 0,"books":"Dermato,Maxillo,Neuro"},
+			{"item": 165,"body": "Infections à VIH","page": 0,"books":"Dermato,Immuno Med i,Neuro"},
+			{"item": 166,"body": "Paludisme","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 167,"body": "Gale et pédiculose","page": 0,"books":"Dermato,Maladie inf"},
+			{"item": 168,"body": "Parasitoses digestives","page": 0,"books":"HGE,Maladie inf"},
+			{"item": 169,"body": "Zoonoses","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 170,"body": "Pathologie infectieuse chez les migrants adultes et enfants","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 171,"body": "Voyage en pays tropical de l'adulte et de l'enfant","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 172,"body": "Diarrhées infectieuses de l'adulte et de l'enfant","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 173,"body": "Prescription et surveillance des anti-infectieux chez l'adulte et l'enfant","page": 0,"books":"Pédiatrie,Maladie inf"},
+			{"item": 174,"body": "Risques émergents bioterrorisme maladies hautement transmissibles","page": 0,"books":"Maladie inf"},
+			{"item": 175,"body": "Risques sanitaires liés à l'eau et à l'alimentation","page": 0,"books":"HGE"},
+			{"item": 176,"body": "Risques sanitaires liés aux irradiations. Radioprotection","page": 0,"books":""},
+			{"item": 177,"body": "La sécurité sanitaire des produits destinés à l'homme","page": 0,"books":""},
+			{"item": 178,"body": "Environnement professionnel et santé au travail","page": 0,"books":""},
+			{"item": 179,"body": "Organisation de la médecine du travail. Prévention des risques professionnels","page": 0,"books":""},
+			{"item": 180,"body": "Accidents du travail et maladies professionnelles","page": 0,"books":"Pneumo"},
+			{"item": 181,"body": "Réaction inflammatoire","page": 0,"books":"Rhumato,Immuno Med i"},
+			{"item": 182,"body": "Hypersensibilités et allergies chez l'enfant et l'adulte","page": 0,"books":"Pneumo,Immuno Med i,Pédiatrie"},
+			{"item": 183,"body": "Hypersensibilités et allergies cutanéomuqueuses chez l'enfant et l'adulte","page": 0,"books":"Dermato,Immuno Med i"},
+			{"item": 184,"body": "Hypersensibilité et Allergies respiratoires chez l'enfant et chez l'adulte","page": 0,"books":"Pneumo,Immuno Med i,Pédiatrie"},
+			{"item": 185,"body": "Déficit immunitaire","page": 0,"books":"Immuno Med i,Pédiatrie"},
+			{"item": 186,"body": "Fièvre prolongée","page": 0,"books":"Immuno Med i,Maladie inf"},
+			{"item": 187,"body": "Fièvre chez un patient immunodéprimé","page": 0,"books":"Immuno Med i,Hemato,Maladie inf"},
+			{"item": 188,"body": "Pathologies auto-immunes : aspects épidémiologiques diagnostiques et principes de traitement","page": 0,"books":"Pneumo,Rhumato,Immuno Med i"},
+			{"item": 189,"body": "Connaître les principaux types de vascularite systémique","page": 0,"books":"Pneumo,Rhumato,Immuno Med i"},
+			{"item": 190,"body": "Lupus érythémateux disséminé. Syndrome des anti-phospholipides","page": 0,"books":"Dermato,Rhumato,Immuno Med i"},
+			{"item": 191,"body": "Artérite à cellules géantes","page": 0,"books":"Rhumato,Immuno Med i"},
+			{"item": 192,"body": "Polyarthrite rhumatoïde","page": 0,"books":"Rhumato,Immuno Med i"},
+			{"item": 193,"body": "Spondylarthrite inflammatoire","page": 0,"books":"Rhumato,Immuno Med i"},
+			{"item": 194,"body": "Arthropathie microcristalline","page": 0,"books":"Rhumato,Immuno Med i"},
+			{"item": 195,"body": "Syndrome douloureux régional complexe (ex algodystrophie)","page": 0,"books":"Rhumato,Immuno Med i,Ortho"},
+			{"item": 196,"body": "Douleur et épanchement articulaire. Arthrite d'évolution récente","page": 0,"books":"Rhumato,Immuno Med i"},
+			{"item": 197,"body": "Transplantation d'organes","page": 0,"books":"Dermato,Ophtalmo,Immuno Med i"},
+			{"item": 198,"body": "Biothérapies et thérapies ciblées","page": 0,"books":"Maxillo,Rhumato,Immuno Med i"},
+			{"item": 199,"body": "Dyspnée aiguë et chronique","page": 0,"books":"ORL,Cardio,Pneumo"},
+			{"item": 200,"body": "Toux chez l'enfant et chez l'adulte","page": 0,"books":"Pneumo,Pédiatrie"},
+			{"item": 201,"body": "Hémoptysie","page": 0,"books":"Pneumo"},
+			{"item": 202,"body": "Épanchement pleural","page": 0,"books":"Pneumo"},
+			{"item": 203,"body": "Opacités et masses intra-thoraciques chez l'enfant et chez l'adulte","page": 0,"books":"Pneumo,Pédiatrie"},
+			{"item": 204,"body": "Insuffisance respiratoire chronique","page": 0,"books":"Pneumo"},
+			{"item": 205,"body": "Bronchopneumopathie chronique obstructive chez l'adulte et l'enfant","page": 0,"books":"Pneumo,Pédiatrie"},
+			{"item": 206,"body": "Pneumopathie interstitielle diffuse","page": 0,"books":"Pneumo,Immuno Med i"},
+			{"item": 207,"body": "Sarcoïdose","page": 0,"books":"Dermato,Pneumo,Rhumato"},
+			{"item": 208,"body": "Hémogramme chez l'adulte et l'enfant","page": 0,"books":"Immuno Med i,Hemato,Pédiatrie"},
+			{"item": 209,"body": "Anémie chez l'adulte et l'enfant","page": 0,"books":"Immuno Med i,Hemato,Pédiatrie"},
+			{"item": 210,"body": "Thrombopénie chez l'adulte et l'enfant","page": 0,"books":"Immuno Med i,Hemato"},
+			{"item": 211,"body": "Purpuras chez l'adulte et l'enfant","page": 0,"books":"Dermato,Hemato,Pédiatrie"},
+			{"item": 212,"body": "Syndrome hémorragique d'origine hématologique","page": 0,"books":"Hemato,Pédiatrie"},
+			{"item": 213,"body": "Syndrome mononucléosique","page": 0,"books":"Immuno Med i,Hemato,Maladie inf"},
+			{"item": 214,"body": "Éosinophilie","page": 0,"books":"Immuno Med i,Hemato,Maladie inf"},
+			{"item": 215,"body": "Pathologie du fer chez l'adulte et l'enfant","page": 0,"books":"Rhumato,HGE,Endoc Nutrition"},
+			{"item": 216,"body": "Adénopathie superficielle de l'adulte et de l'enfant","page": 0,"books":"ORL,Immuno Med i,Hemato"},
+			{"item": 217,"body": "Amylose","page": 0,"books":"Immuno Med i,Hemato,Néphrologie"},
+			{"item": 218,"body": "Athérome : épidémiologie et physiopathologie. Le malade poly-athéromateux","page": 0,"books":"Cardio"},
+			{"item": 219,"body": "Facteurs de risque cardio-vasculaire et prévention","page": 0,"books":"Cardio,Endoc Nutrition"},
+			{"item": 220,"body": "Dyslipidémies","page": 0,"books":"Cardio,Endoc Nutrition"},
+			{"item": 221,"body": "Hypertension artérielle de l'adulte","page": 0,"books":"Cardio,Ophtalmo,Néphrologie"},
+			{"item": 222,"body": "Hypertension artérielle pulmonaire de l'enfant et de l'adulte","page": 0,"books":"Cardio,Pneumo,Pédiatrie"},
+			{"item": 223,"body": "Artériopathie oblitérante de l'aorte des artères viscérales et des membres inférieurs ; anévrysmes","page": 0,"books":"Cardio"},
+			{"item": 224,"body": "Thrombose veineuse profonde et embolie pulmonaire","page": 0,"books":"Cardio,Pneumo,Hemato"},
+			{"item": 225,"body": "Insuffisance veineuse chronique","page": 0,"books":"Cardio"},
+			{"item": 226,"body": "Ulcère de jambe","page": 0,"books":"Dermato,Ortho"},
+			{"item": 227,"body": "Surveillance et complications des abords veineux","page": 0,"books":""},
+			{"item": 228,"body": "Douleur thoracique aiguë et chronique","page": 0,"books":"Cardio,Pneumo"},
+			{"item": 229,"body": "Électrocardiogramme : indications et interprétations","page": 0,"books":"Cardio"},
+			{"item": 230,"body": "Fibrillation atriale","page": 0,"books":"Cardio"},
+			{"item": 231,"body": "Valvulopathies","page": 0,"books":"Cardio"},
+			{"item": 232,"body": "Insuffisance cardiaque de l'adulte","page": 0,"books":"Cardio"},
+			{"item": 233,"body": "Péricardite aiguë","page": 0,"books":"Cardio"},
+			{"item": 234,"body": "Troubles de la conduction intracardiaque","page": 0,"books":"Cardio"},
+			{"item": 235,"body": "Palpitations","page": 0,"books":"Cardio"},
+			{"item": 236,"body": "Souffle cardiaque chez l'enfant","page": 0,"books":"Cardio,Pédiatrie"},
+			{"item": 237,"body": "Acrosyndromes","page": 0,"books":"Dermato,Immuno Med i"},
+			{"item": 238,"body": "Hypoglycémie chez l'adulte et l'enfant","page": 0,"books":"Endoc Nutrition,Pédiatrie"},
+			{"item": 239,"body": "Goitre nodules thyroïdiens et cancers thyroïdiens","page": 0,"books":"Endoc Nutrition"},
+			{"item": 240,"body": "Hyperthyroïdie","page": 0,"books":"Ophtalmo,Endoc Nutrition"},
+			{"item": 241,"body": "Hypothyroïdie","page": 0,"books":"Endoc Nutrition,Pédiatrie"},
+			{"item": 242,"body": "Adénome hypophysaire","page": 0,"books":"Endoc Nutrition"},
+			{"item": 243,"body": "Insuffisance surrénale chez l'adulte et l'enfant","page": 0,"books":"Endoc Nutrition,Pédiatrie"},
+			{"item": 244,"body": "Gynécomastie","page": 0,"books":"Endoc Nutrition"},
+			{"item": 245,"body": "Diabète sucré de types 1 et 2 de l'enfant et de l'adulte","page": 0,"books":"Ophtalmo,Néphrologie,Endoc Nutrition"},
+			{"item": 246,"body": "Prévention primaire par la nutrition chez l'adulte et l'enfant","page": 0,"books":"Endoc Nutrition"},
+			{"item": 247,"body": "Modifications thérapeutiques du mode de vie","page": 0,"books":"Endoc Nutrition,Pédiatrie"},
+			{"item": 248,"body": "Dénutrition chez l'adulte et l'enfant","page": 0,"books":"HGE,Endoc Nutrition,Pédiatrie"},
+			{"item": 249,"body": "Amaigrissement à tous les âges","page": 0,"books":"Endoc Nutrition,Pédiatrie,Immuno Med i"},
+			{"item": 250,"body": "Troubles nutritionnels chez le sujet âgé","page": 0,"books":"Gériatrie,Endoc Nutrition"},
+			{"item": 251,"body": "Obésité de l'enfant et de l'adulte","page": 0,"books":"Endoc Nutrition,Pédiatrie,Gynéco Obs"},
+			{"item": 252,"body": "Nutrition et grossesse","page": 0,"books":"Endoc Nutrition,Gynéco Obs"},
+			{"item": 253,"body": "Aptitude au sport chez l'adulte et l'enfant ; besoins nutritionnels chez le sportif","page": 0,"books":"Rhumato,Endoc Nutrition,Pédiatrie"},
+			{"item": 254,"body": "Oedèmes des membres inférieurs localisés ou généralisés","page": 0,"books":"Néphrologie,Immuno Med i"},
+			{"item": 255,"body": "Élévation de la créatininémie","page": 0,"books":"Néphrologie"},
+			{"item": 256,"body": "Protéinurie et syndrome néphrotique de chez l'l'adulte et de l'enfant","page": 0,"books":"Néphrologie,Pédiatrie"},
+			{"item": 257,"body": "Hématurie","page": 0,"books":"Néphrologie,Urologie,Pédiatrie"},
+			{"item": 258,"body": "Néphropathie glomérulaire","page": 0,"books":"Néphrologie"},
+			{"item": 259,"body": "Néphropathie interstitielle","page": 0,"books":"Néphrologie"},
+			{"item": 260,"body": "Néphropathie vasculaire","page": 0,"books":"Néphrologie"},
+			{"item": 261,"body": "Insuffisance rénale chronique chez l'adulte et l'enfant","page": 0,"books":"Néphrologie,Pédiatrie"},
+			{"item": 262,"body": "Lithiase urinaire","page": 0,"books":"Néphrologie,Urologie"},
+			{"item": 263,"body": "Polykystose rénale","page": 0,"books":"Néphrologie,Urologie"},
+			{"item": 264,"body": "Prescription et surveillance des diurétiques","page": 0,"books":"Cardio,Néphrologie"},
+			{"item": 265,"body": "Troubles de l'équilibre acido-basique et désordres hydro-électrolytiques","page": 0,"books":"Néphrologie,Endoc Nutrition"},
+			{"item": 266,"body": "Hypercalcémie","page": 0,"books":"Rhumato,Néphrologie,Endoc Nutrition"},
+			{"item": 267,"body": "Douleurs abdominales et lombaires aiguës chez l'enfant et chez l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 268,"body": "Reflux gastro-oesophagien chez le nourrisson chez l'enfant et chez l'adulte. Hernie hiatale","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 269,"body": "Ulcère gastrique et duodénal. Gastrite","page": 0,"books":"HGE"},
+			{"item": 270,"body": "Dysphagie","page": 0,"books":"ORL,HGE"},
+			{"item": 271,"body": "Vomissements du nourrisson de l'enfant et de l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 272,"body": "Splénomégalie","page": 0,"books":"Hemato,Immuno Med i"},
+			{"item": 273,"body": "Hépatomégalie et masse abdominale","page": 0,"books":"HGE"},
+			{"item": 274,"body": "Lithiase biliaire et complications","page": 0,"books":"HGE"},
+			{"item": 275,"body": "Ictère","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 276,"body": "Cirrhose et complications","page": 0,"books":"HGE"},
+			{"item": 277,"body": "Ascite","page": 0,"books":"HGE"},
+			{"item": 278,"body": "Pancréatite chronique","page": 0,"books":"HGE"},
+			{"item": 279,"body": "Maladies Inflammatoires Chroniques de l'Intestin (MICI) chez l'adulte et l'enfant","page": 0,"books":"HGE,Pédiatrie,Immuno Med i"},
+			{"item": 280,"body": "Constipation chez l'enfant et l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 281,"body": "Colopathie fonctionnelle","page": 0,"books":"HGE"},
+			{"item": 282,"body": "Diarrhée chronique chez l'adulte et l'enfant","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 283,"body": "Diarrhée aiguë et déshydratation chez le nourrisson l'enfant et l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 284,"body": "Diverticulose colique et diverticulite aiguë du sigmoïde","page": 0,"books":"HGE"},
+			{"item": 285,"body": "Pathologie hémorroïdaire","page": 0,"books":"HGE"},
+			{"item": 286,"body": "Hernie pariétale chez l'enfant et l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 287,"body": "Épidémiologie facteurs de risque prévention et dépistage des cancers","page": 0,"books":"Gynéco Obs"},
+			{"item": 288,"body": "Cancer : cancérogénèse oncogénétique","page": 0,"books":""},
+			{"item": 289,"body": "Diagnostic des cancers : signes d'appel et investigations para-cliniques","page": 0,"books":""},
+			{"item": 290,"body": "Le médecin préleveur de cellules et/ou de tissus pour des examens d'Anatomie et Cytologie pathologiques","page": 0,"books":""},
+			{"item": 291,"body": "Traitement des cancers","page": 0,"books":""},
+			{"item": 292,"body": "Prise en charge et accompagnement d'un malade cancéreux à tous les stades de la maladie","page": 0,"books":""},
+			{"item": 293,"body": "Agranulocytose médicamenteuse","page": 0,"books":"Hemato"},
+			{"item": 294,"body": "Cancer de l'enfant : particularités épidémiologiques diagnostiques et thérapeutiques","page": 0,"books":"Pédiatrie"},
+			{"item": 295,"body": "Tumeurs de la cavité buccale naso-sinusiennes et du cavum et des voies aérodigestives supérieures","page": 0,"books":"ORL,Maxillo"},
+			{"item": 296,"body": "Tumeurs intracrâniennes","page": 0,"books":"Neuro"},
+			{"item": 297,"body": "Tumeurs du col utérin tumeur du corps utérin","page": 0,"books":"Gynéco Obs"},
+			{"item": 298,"body": "Tumeurs du colon et du rectum","page": 0,"books":"HGE"},
+			{"item": 299,"body": "Tumeurs cutanées épithéliales et mélaniques","page": 0,"books":"Dermato,Maxillo"},
+			{"item": 300,"body": "Tumeurs de l'estomac","page": 0,"books":"HGE"},
+			{"item": 301,"body": "Tumeurs du foie primitives et secondaires","page": 0,"books":"HGE"},
+			{"item": 302,"body": "Tumeurs de l'oesophage","page": 0,"books":"HGE"},
+			{"item": 303,"body": "Tumeurs de l'ovaire","page": 0,"books":"Endoc Nutrition,Gynéco Obs"},
+			{"item": 304,"body": "Tumeurs des os primitives et secondaires","page": 0,"books":"Maxillo,Rhumato,Ortho"},
+			{"item": 305,"body": "Tumeurs du pancréas","page": 0,"books":"HGE,Endoc Nutrition"},
+			{"item": 306,"body": "Tumeurs du poumon primitives et secondaires","page": 0,"books":"Pneumo"},
+			{"item": 307,"body": "Tumeurs de la prostate","page": 0,"books":"Urologie"},
+			{"item": 308,"body": "Tumeurs du rein","page": 0,"books":"Urologie"},
+			{"item": 309,"body": "Tumeurs du sein","page": 0,"books":"Gynéco Obs"},
+			{"item": 310,"body": "Tumeurs du testicule","page": 0,"books":"Urologie,Endoc Nutrition"},
+			{"item": 311,"body": "Tumeurs vésicales","page": 0,"books":"Urologie"},
+			{"item": 312,"body": "Leucémies aiguës","page": 0,"books":"Hemato"},
+			{"item": 313,"body": "Syndromes myélodysplasiques","page": 0,"books":"Hemato"},
+			{"item": 314,"body": "Syndromes myéloprolifératifs","page": 0,"books":"Hemato"},
+			{"item": 315,"body": "Leucémies lymphoïdes chroniques","page": 0,"books":"Hemato"},
+			{"item": 316,"body": "Lymphomes malins","page": 0,"books":"Dermato,Hemato"},
+			{"item": 317,"body": "Myélome multiple des os","page": 0,"books":"Rhumato,Hemato,Néphrologie"},
+			{"item": 318,"body": "Principe du bon usage du médicament et des thérapeutiques non médicamenteuses","page": 0,"books":"Néphrologie"},
+			{"item": 319,"body": "La décision thérapeutique personnalisée : bon usage dans des situations à risque","page": 0,"books":""},
+			{"item": 320,"body": "Analyser et utiliser les résultats des études cliniques dans la perspective du bon usage","page": 0,"books":""},
+			{"item": 321,"body": "Éducation thérapeutique observance et automédication","page": 0,"books":"Immuno Med i"},
+			{"item": 322,"body": "Identification et gestion des risques liés aux médicaments et aux biomatériaux","page": 0,"books":"Dermato"},
+			{"item": 323,"body": "Cadre réglementaire de la prescription thérapeutique et recommandations pour le bon usage","page": 0,"books":""},
+			{"item": 324,"body": "Thérapeutiques non médicamenteuses et dispositifs médicaux","page": 0,"books":""},
+			{"item": 325,"body": "Transfusion sanguine et produits dérivés du sang : indications complications. Hémovigilance","page": 0,"books":"Hemato,Pédiatrie"},
+			{"item": 326,"body": "Prescription et surveillance des classes de médicaments les plus courantes chez l'adulte et chez l'enfant","page": 0,"books":"Dermato,Cardio,Pneumo"},
+			{"item": 327,"body": "Arrêt cardio-circulatoire","page": 0,"books":"Cardio,Pédiatrie"},
+			{"item": 328,"body": "État de choc","page": 0,"books":"Pédiatrie"},
+			{"item": 329,"body": "Prise en charge immédiate pré-hospitalière et à l'arrivée à l'hôpital","page": 0,"books":"Maxillo,Ortho,Urologie"},
+			{"item": 330,"body": "Orientation diagnostique et conduite à tenir devant un traumatisme cranio-facial","page": 0,"books":"ORL,Ophtalmo,Maxillo"},
+			{"item": 331,"body": "Coma non traumatique chez l'adulte et chez l'enfant","page": 0,"books":"Neuro"},
+			{"item": 332,"body": "Principales intoxications aiguës","page": 0,"books":"Pédiatrie"},
+			{"item": 333,"body": "Oedème de Quincke et anaphylaxie","page": 0,"books":"Pneumo"},
+			{"item": 334,"body": "Syndromes coronariens aigus","page": 0,"books":"Cardio"},
+			{"item": 335,"body": "Accidents vasculaires cérébraux","page": 0,"books":"Neuro"},
+			{"item": 336,"body": "Hémorragie méningée","page": 0,"books":"Neuro"},
+			{"item": 337,"body": "Malaise perte de connaissance crise comitiale chez l'adulte","page": 0,"books":"Cardio,Neuro"},
+			{"item": 338,"body": "État confusionnel et trouble de conscience chez l'adulte et chez l'enfant","page": 0,"books":"Neuro,Pédiatrie,Psy"},
+			{"item": 339,"body": "Prise en charge d'une patiente atteinte de pré-éclampsie","page": 0,"books":"Néphrologie,Gynéco Obs"},
+			{"item": 340,"body": "Malaise grave du nourrisson et mort subite","page": 0,"books":"Pédiatrie"},
+			{"item": 341,"body": "Convulsions chez le nourrisson et chez l'enfant","page": 0,"books":"Pédiatrie"},
+			{"item": 342,"body": "Rétention aiguë d'urine","page": 0,"books":"Urologie,Gynéco Obs"},
+			{"item": 343,"body": "Insuffisance rénale aiguë - Anurie","page": 0,"books":"Néphrologie,Urologie"},
+			{"item": 344,"body": "Infection aiguë des parties molles (abcès panaris phlegmon des gaines)","page": 0,"books":"Maxillo,Ortho"},
+			{"item": 345,"body": "Grosse jambe rouge aiguë","page": 0,"books":"Dermato"},
+			{"item": 346,"body": "Agitation et délire aiguë","page": 0,"books":"Psy"},
+			{"item": 347,"body": "Crise d'angoisse aiguë et attaque de panique","page": 0,"books":"Psy"},
+			{"item": 348,"body": "Risque et conduite suicidaires chez l'enfant l'adolescent et l'adulte : identification et prise en charge","page": 0,"books":"Pédiatrie,Psy"},
+			{"item": 349,"body": "Syndrome occlusif de l'enfant et de l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 350,"body": "Hémorragie digestive","page": 0,"books":"HGE"},
+			{"item": 351,"body": "Appendicite de l'enfant et de l'adulte","page": 0,"books":"HGE,Pédiatrie"},
+			{"item": 352,"body": "Péritonite aiguë chez l'enfant et chez l'adulte","page": 0,"books":"HGE,Pédiatrie,Maladie inf"},
+			{"item": 353,"body": "Pancréatite aiguë","page": 0,"books":"HGE"},
+			{"item": 354,"body": "Détresse respiratoire aigüe du nourrisson de l'enfant et de l'adulte","page": 0,"books":"ORL,Pneumo,Pédiatrie"},
+			{"item": 355,"body": "Insuffisance respiratoire aiguë","page": 0,"books":"Pédiatrie"},
+			{"item": 356,"body": "Pneumothorax","page": 0,"books":"Pneumo"},
+			{"item": 357,"body": "Lésions péri-articulaires et ligamentaires du genou de la cheville et de l'épaule","page": 0,"books":"Rhumato,Ortho"},
+			{"item": 358,"body": "Prothèses et ostéosynthèses","page": 0,"books":"Ortho"},
+			{"item": 359,"body": "Fractures fréquentes de l'adulte et du sujet âgé","page": 0,"books":"Ortho"},
+			{"item": 360,"body": "Fractures chez l'enfant : particularités épidémiologiques diagnostiques et thérapeutiques","page": 0,"books":"Maxillo,Ortho,Pédiatrie"},
+			{"item": 361,"body": "Surveillance d'un malade sous plâtre diagnostiquer une complication","page": 0,"books":"Ortho"},
+			{"item": 362,"body": "Exposition accidentelle aux liquides biologiques : conduite à tenir","page": 0,"books":"Maladie inf"},
+		];
+		
+		var searchInput = document.getElementById('search-input');
+		searchInput.onchange = search;
+		searchInput.onkeyup = search;
+		
+		var searchItemNode = document.getElementById('search-item');
+		searchItemNode.onchange = searchItem;
+		searchItemNode.onkeyup = searchItem;
+
+		var checkedItems = {};
+		var localSto = window.localStorage;
+		if (localSto.getItem('checkedItems') == undefined) {
+			localSto.setItem('checkedItems', JSON.stringify(checkedItems));
+		} else {
+			var localItems = JSON.parse(localSto.getItem('checkedItems'));
+			checkedItems = localItems;
+		}
+
+		searchInput.dispatchEvent(new KeyboardEvent('keyup', {}));
+
+		function resetTable(table) {
+			while (table.firstChild) {
+				table.removeChild(table.lastChild);
+			}
+		}
+
+		function addHeader(table) {
+			var tHead = table.createTHead();
+			var row = tHead.insertRow();
+			var cell = row.insertCell();
+			cell.innerHTML = "Déjà fait";
+			cell.style.width = "45px";
+
+			cell = row.insertCell();
+			cell.innerHTML = "Score de recherche";
+			cell.style.width = "45px";
+
+			cell = row.insertCell();
+			cell.innerHTML = "Item";
+			cell.style.width = "40px";
+
+			cell = row.insertCell();
+			cell.innerHTML = "Intitulé";
+
+			cell = row.insertCell();
+			cell.innerHTML = "Page";
+
+			cell = row.insertCell();
+			cell.innerHTML = "Books";
+		}
+		
+		function searchItem(event) {
+			var wantedItem = event.target.value;
+			
+			var ulShow = document.getElementById('ul-show');
+			resetTable(ulShow);
+			addHeader(ulShow);
+			var tbody = ulShow.createTBody();
+						
+			for (var key in listChapters) {
+				var chapter = listChapters[key];
+				if (chapter['item'] == wantedItem || wantedItem.length == 0) {
+					addRowContent(tbody, chapter.item, 1, chapter.body, chapter.page, chapter.books);
+				}
+			}
+		}
+		
+		function search(event) {
+			console.log('ok');
+			var searchValue = latinize(event.target.value).toLowerCase();
+			var searchTerms = searchValue.split(" ");
+
+			var validChapters = [];
+			
+			for (var key in listChapters) {
+				var chapter = listChapters[key];
+				var latinizedBody = latinize(chapter['body']).toLowerCase();
+				
+				var found = false;
+				
+				for (var term in searchTerms) {
+					if (latinizedBody.indexOf(searchTerms[term]) != -1 && found == false) {
+						validChapters.push(chapter);
+						found = true;
+					}
+				}
+			}
+			
+			var ulShow = document.getElementById('ul-show');
+			resetTable(ulShow);
+			addHeader(ulShow);
+			var tbody = ulShow.createTBody();
+
+			var sortedValidChapters = [];
+			
+			for (var key in validChapters) {
+				var chapter = validChapters[key];
+
+				[output, score] = getEditedBody(chapter, searchTerms);
+
+				sortedValidChapters.push([score, chapter.item, output, chapter.page, chapter.books]);
+			}
+
+			sortedValidChapters.sort(compareNombres);
+
+			for (var key in sortedValidChapters) {
+				var chapter = sortedValidChapters[key];
+				addRowContent(tbody, chapter[1], chapter[0], chapter[2], chapter[3], chapter[4]);
+			}
+		}
+
+		function getEditedBody(chapter, searchTerms) {
+			var latinizedBody = latinize(chapter['body']).toLowerCase();
+
+			var output = chapter['body'];
+
+			var score = 0;
+			var highlightsIndex = [];
+
+			for (var term in searchTerms) {
+				var offset = latinizedBody.indexOf(searchTerms[term]);
+				if (offset != -1) {
+					var searchLength = searchTerms[term].length;
+					highlightsIndex.push([offset,searchLength]);
+					score++;
+				}
+			}
+			output = insertHighlights(output, highlightsIndex);
+
+			return [output, score];
+		}
+
+		function insertHighlights(output, highlights) {
+			highlights.sort(compareNombres);
+
+			var lastOffset = 0;
+			for (var key in highlights) {
+				var offset = highlights[key][0];
+				var length = highlights[key][1];
+				if (lastOffset != 0 && offset + length > lastOffset) {
+					length = lastOffset - offset;
+				}
+				output = insertAt(output, offset, length);
+				lastOffset = offset;
+			}
+			return output;
+		}
+
+		function compareNombres(a, b) {
+			return b[0]-a[0];
+		}
+
+		function addRowContent(tbody, item, score, body, page, books) {
+			var tr = tbody.insertRow();
+			tr.id = item;
+			tr.onclick = changeEventHandler;
+
+			var cell = tr.insertCell();
+			var input = document.createElement("input");
+			input.setAttribute("id", item);
+			input.type = "checkbox";
+			input.name = item;
+			input.id = 'input-'+item;
+			input.onchange = checkEventHandler;
+			var lesItems = Object.keys(checkedItems);
+			input.checked = (lesItems.includes(item.toString()))?true:false;
+			cell.appendChild(input);
+			changeColor(item);
+
+			cell = tr.insertCell();
+			cell.innerHTML = score;
+			cell = tr.insertCell();
+			cell.innerHTML = item;
+			cell = tr.insertCell();
+			cell.innerHTML = body;
+			cell = tr.insertCell();
+			cell.innerHTML = page;
+			cell = tr.insertCell();
+			cell.innerHTML = books;
+			cell.style.maxWidth = "300px";
+		}
+
+		function changeEventHandler(event) {
+			var td = event.target;
+			var tr = td.parentNode;
+			var id = tr.id;
+			var wantedInput = 'input-'+id;
+			var input = document.getElementById(wantedInput);
+			if (Object.keys(checkedItems).includes(id)) {
+				checkedItems[id]++;
+				changeColor(id);
+			} else {
+				checkedItems[id] = 1;
+				changeColor(id);
+				input.checked = true;
+			}
+			console.log(checkedItems);
+			localSto.setItem('checkedItems', JSON.stringify(checkedItems));
+			console.log(JSON.parse(localSto.getItem('checkedItems')));
+		}
+		
+		function changeColor(id) {
+			var colorMapping = ["#DCEDC8","#C5E1A5","#AED581","#9CCC65","#8BC34A","#78AD40"];
+			var tr = document.getElementById(id);
+			var colorValue = checkedItems[id];
+			if(tr == undefined) { return; }
+			tr.style.backgroundColor = colorMapping[colorValue];
+		}
+
+		function removeColor(id) {
+			var tr = document.getElementById(id);
+			if(tr == undefined) { return; }
+			tr.style.backgroundColor = 'white';
+		}
+
+		function checkEventHandler(event) {
+			var input = event.target;
+			var td = input.parentNode;
+			var tr = td.parentNode;
+			removeColor(tr.id);
+			delete checkedItems[tr.id];
+			localSto.setItem('checkedItems', JSON.stringify(checkedItems));
+		}
+		
+		function insertAt(text, offset, termLength) {
+			var output = [text.slice(0, offset+termLength), '</span>', text.slice(offset+termLength)].join('');
+
+			return [output.slice(0, offset), '<span class="hightlight">', output.slice(offset)].join('');
+		}
+
+	</script>
+</body>
+</html>
