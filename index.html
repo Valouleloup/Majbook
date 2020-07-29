@@ -15,7 +15,7 @@
 		}
 		
 		thead tr td {
-			background-color: #ffa27a;
+			background-color: #d1d1d1;
 		}
 		
 		td, th {
@@ -452,7 +452,7 @@
 			cell.style.width = "45px";
 
 			cell = row.insertCell();
-			cell.innerHTML = "Score de recherche";
+			cell.innerHTML = "Nb vue";
 			cell.style.width = "45px";
 
 			cell = row.insertCell();
@@ -467,6 +467,10 @@
 
 			cell = row.insertCell();
 			cell.innerHTML = "Books";
+			
+			cell = row.insertCell();
+			cell.innerHTML = "Score de recherche";
+			cell.style.width = "45px";
 		}
 		
 		function searchItem(event) {
@@ -588,7 +592,7 @@
 			changeColor(item);
 
 			cell = tr.insertCell();
-			cell.innerHTML = score;
+			cell.innerHTML = checkedItems[item]!=undefined?checkedItems[item]:'';
 			cell = tr.insertCell();
 			cell.innerHTML = item;
 			cell = tr.insertCell();
@@ -598,6 +602,8 @@
 			cell = tr.insertCell();
 			cell.innerHTML = books;
 			cell.style.maxWidth = "300px";
+			cell = tr.insertCell();
+			cell.innerHTML = score;
 		}
 
 		function changeEventHandler(event) {
@@ -620,11 +626,16 @@
 		}
 		
 		function changeColor(id) {
-			var colorMapping = ["#DCEDC8","#C5E1A5","#AED581","#9CCC65","#8BC34A","#78AD40"];
+			var colorMapping = ["","#FF5D50","#FE943C","#78FC5A","#68C7FF"];
 			var tr = document.getElementById(id);
 			var colorValue = checkedItems[id];
 			if(tr == undefined) { return; }
-			tr.style.backgroundColor = colorMapping[colorValue];
+			var theColor = colorMapping[colorValue]
+			if (colorValue > 4) {
+				theColor = "#68C7FF"
+			}
+			tr.style.backgroundColor = theColor;
+			if(tr.children.item(1) != undefined) { tr.children.item(1).innerHTML = colorValue; }
 		}
 
 		function removeColor(id) {
