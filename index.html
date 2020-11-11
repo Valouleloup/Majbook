@@ -42,6 +42,11 @@
 	
 	<label for="search-item">Recherche par item</label>
 	<input id="search-item"></input>
+
+	<label for="count-item">Nombre d'items cochés</label>
+	<input id="count-item" disabled></input>
+
+	<button onclick="copyCode()">Copier le code de sauvegarde</button>
 	
 	<ul id="ul-list">
 	</ul>
@@ -436,6 +441,13 @@
 			checkedItems = localItems;
 		}
 
+		var countDiv = document.getElementById('count-item');
+		countDiv.value = Object.keys(checkedItems).length;
+
+		function copyCode(){
+			window.prompt("Copier le code de sauvegarde", JSON.stringify(checkedItems));
+		}
+
 		searchInput.dispatchEvent(new KeyboardEvent('keyup', {}));
 
 		function resetTable(table) {
@@ -623,6 +635,7 @@
 			console.log(checkedItems);
 			localSto.setItem('checkedItems', JSON.stringify(checkedItems));
 			console.log(JSON.parse(localSto.getItem('checkedItems')));
+			countDiv.value = Object.keys(checkedItems).length;
 		}
 		
 		function changeColor(id) {
@@ -651,6 +664,7 @@
 			removeColor(tr.id);
 			delete checkedItems[tr.id];
 			localSto.setItem('checkedItems', JSON.stringify(checkedItems));
+			countDiv.value = Object.keys(checkedItems).length;
 		}
 		
 		function insertAt(text, offset, termLength) {
